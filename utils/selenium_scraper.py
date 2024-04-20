@@ -107,6 +107,7 @@ class AmazonScraper:
         return self.driver.find_element(By.ID, 'productTitle').text
     
     def getLeftImage(self):
+        st.code([img.get_attribute('src') for img in self.driver.find_elements(By.XPATH, "//div[@id='imageBlock']//div[@class='imgTagWrapper']//img")])
         return [img.get_attribute('src') for img in self.driver.find_elements(By.XPATH, "//div[@id='imageBlock']//div[@class='imgTagWrapper']//img")]
 
     def getProductNameAndIDFromURL(self):
