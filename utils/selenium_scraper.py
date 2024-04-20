@@ -1,14 +1,15 @@
-import requests
 import random
 import re
 import urllib
-
-
-import chromedriver_autoinstaller
-
+import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.os_manager import ChromeType
 
 
 user_agents = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.94 Chrome/37.0.2062.94 Safari/537.36',
@@ -63,14 +64,25 @@ user_agents = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36']
 
 
+@st.cache_resource
+def get_driver():
+    return webdriver.Chrome(
+        service=Service(
+            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+        )
+    )
+
+
 class AmazonScraper:
 
     def __init__(self, url):
         
         service = webdriver.chrome.service.Service()
-        options = webdriver.ChromeOptions()
+        # options = webdriver.ChromeOptions()
+        options = Options()
         options.add_argument("--start-maximized")
         options.add_argument("--headless=new")
+        options.add_argument("--disable-gpu")
         options.add_argument(f"user-agent={random.choice(user_agents)}")
         options.add_experimental_option("detach", True)
         self.driver = webdriver.Chrome(service=service, options=options)

@@ -1,9 +1,7 @@
-import pandas as pd
 import streamlit as st
 
 from utils.selenium_scraper import AmazonScraper
 
-import chromedriver_autoinstaller
 
 def get_product(product_url):
     scraper = AmazonScraper(product_url)
@@ -31,8 +29,6 @@ def get_product(product_url):
 
     return product
 
-
-chromedriver_autoinstaller.install()
 
 st.set_page_config(layout='wide')
 
