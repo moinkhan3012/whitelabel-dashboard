@@ -11,7 +11,6 @@ def get_product(product_url):
     product['id'] = product_id
     product['name'] = product_name
 
-    st.code(product)
     main_image = scraper.getLeftImage()[0]
     center_div = scraper.parseCenterDiv()
 
