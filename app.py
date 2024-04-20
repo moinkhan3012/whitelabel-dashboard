@@ -32,7 +32,8 @@ def get_product(product_url):
 
 st.set_page_config(layout='wide')
 
-product_url = st.text_input("Enter Product Name URL ")
+st.markdown("<h1 style='text-align: center; color: grey;'>IOT White Labelling</h1>", unsafe_allow_html=True)
+product_url = st.text_input("Search Amazon Product URL", placeholder="Enter Product URL and hit enter", help="Enter Product URL and hit enter")
 
 if product_url:
 
