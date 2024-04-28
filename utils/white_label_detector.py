@@ -43,18 +43,17 @@ import matplotlib.pyplot as plt
 
 ## Data Processing
 
-df = pd.read_csv('/Users/priyankabose/Streamlit Dashboard/whitelabel-dashboard/amazon_smart_cameras_products_dataset - amazon_smart_cameras_products_dataset (1).csv')
-df.columns
+#load the model
+nltk.download('punkt')
+nlp = spacy.load("en_ner_sensitive_spacy")
+df = pd.read_csv('./amazon_smart_cameras_products_dataset - amazon_smart_cameras_products_dataset (1).csv')
 
 ## Extract App Names
 
 # NER
 
 # nltk.data.path.append(r".\tokenizers")
-nltk.download('punkt')
-#load the model
 # nlp = spacy.load(r"C:\Users\moink\Downloads\white_label\model-best")
-nlp = spacy.load(r"/Users/priyankabose/Desktop/case_sensitive_ner")
 
 import string
 from collections import defaultdict
@@ -186,7 +185,7 @@ for i in range(len(df)):
         temp_df = pd.DataFrame([{'product_1': id1, 'product_2': id2, 'brand_1': df.iloc[i]['brand'], 'brand_2': df.iloc[j]['brand'], 'text_short': short_desc_similarity_matrix_tfidf[i, j], 'text_long': long_desc_similarity_matrix_tfidf[i,j], 'image': img_similarity_matrix[image_1_index][image_2_index], 'product_1_url': df.iloc[i]['url'], 'product_2_url': df.iloc[j]['url']}])
         product_matrix_df = pd.concat([temp_df, product_matrix_df], ignore_index=True)
 
-product_matrix_df.to_csv("/Users/priyankabose/Streamlit Dashboard/whitelabel-dashboard/amazon_smart_cameras_products_text_image_matrix_tfidf.csv", index=False)
+product_matrix_df.to_csv("./amazon_smart_cameras_products_text_image_matrix_tfidf.csv", index=False)
 
 product_matrix_df.sort_values('image', ascending=False).head()
 
