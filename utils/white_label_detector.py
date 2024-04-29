@@ -1,4 +1,6 @@
+import requests
 import pandas as pd
+import streamlit as st
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -79,18 +81,34 @@ def get_all_contexts(text, target_word, context_size=5):
 
     return all_contexts
 
-def get_app_name(nlp, text):
+def __extract_app_name(text):
+    API_URL = st.secrets.huggingface_cred.API_URL
+    API_TOKEN = st.secrets.huggingface_cred.API_TOKEN
+    headers = {"Authorization": f"Bearer {API_TOKEN}"}
+    payload = {
+        "input": text,
+        "wait_for_model": True #avoid 503 issue
+    }
+	
+    response = requests.post(API_URL, headers=headers, json=payload)
+    if response.status_code ==200:
+    	return [app['word']for app in response]
+
+    return None
+    
+
+def get_app_name(text):
 
     contexts = get_all_contexts(text, "app")
 
     app_name = defaultdict(int)
 
     for context in contexts:
-        doc = nlp(context)
+        app_names = __extract_app_name(context)
 
         #iterate through the entities
-        for ent in doc.ents:
-            name = re.sub("[^a-zA-Z0-9]", "", ent.text.upper())
+        for app in app_names:
+            name = re.sub("[^a-zA-Z0-9]", "", app.upper())
             app_name[name]  +=1
 
     # return app_name if app_name else None

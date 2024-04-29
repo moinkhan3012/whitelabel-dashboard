@@ -1,6 +1,16 @@
 import streamlit as st
 from utils.selenium_scraper import AmazonScraper
 from utils.data_analysis import DataAnalysis
+from utils.product_similarity import *
+
+import logging
+
+logging.basicConfig(level=logging.WARNING)
+
+st_logger = logging.getLogger('streamlit')
+st_logger.setLevel(logging.WARNING)
+
+
 
 def get_product(product_url):
     scraper = AmazonScraper(product_url)
@@ -58,9 +68,15 @@ if product_url:
     
     col1, col2 = st.columns([1, 10])
     with col2:
+        
         if st.button("Search for white labels", use_container_width=True, type="primary"):
-            data_path = "/Users/priyankabose/Streamlit Dashboard/whitelabel-dashboard/amazon_smart_cameras_products_text_image_matrix_tfidf.csv"
+            data_path = "./amazon_smart_cameras_products_text_image_matrix_tfidf.csv"
             given_product_id = product['id']
             data_analysis = DataAnalysis(data_path, given_product_id)
             top_similar_products = data_analysis.find_top_similar_products()
             display_top_similar_products(top_similar_products)
+            
+            
+        if st.button("Get app names", use_container_width=True, type="secondary"):
+            st.markdown(get_app_name(product['short_description'] + product['long_description']))
+

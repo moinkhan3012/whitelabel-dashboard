@@ -7,4 +7,3 @@ streamlit==1.28.0
 flashtext==2.7
 pywsd==1.2.5
 git+https://github.com/boudinfl/pke.git
-https://huggingface.co/MoinKhan3012/en_ner_sensitive_spacy/resolve/main/en_ner_sensitive_spacy-any-py3-none-any.whl
