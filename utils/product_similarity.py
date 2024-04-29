@@ -29,16 +29,14 @@ def get_all_contexts(text, target_word, context_size=5):
 def __extract_app_name(text):
     API_URL = st.secrets.huggingface_cred.API_URL
     API_TOKEN = st.secrets.huggingface_cred.API_TOKEN
-    st.markdown(API_TOKEN + API_URL)
-    st.markdown(type(text))
-    st.markdown(text)
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
     
     payload = {
         "inputs": text,
-        "wait_for_model": True #avoid 503 issue
+        "options": {
+            "wait_for_model": True #avoid 503 issue
+        }
     }
-	
     response = requests.post(API_URL, headers=headers, json=payload)
     if response.status_code ==200:
     	return {"apps": [app['word'] for app in response.json()]}
