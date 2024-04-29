@@ -2,14 +2,13 @@ import streamlit as st
 from utils.selenium_scraper import AmazonScraper
 from utils.data_analysis import DataAnalysis
 from utils.product_similarity import *
-
+import nltk
 import logging
 
 logging.basicConfig(level=logging.WARNING)
 
 st_logger = logging.getLogger('streamlit')
 st_logger.setLevel(logging.WARNING)
-
 
 
 def get_product(product_url):

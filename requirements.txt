@@ -3,6 +3,7 @@ seleniumbase
 webdriver-manager
 beautifulsoup4
 requests
+nltk
 streamlit==1.28.0
 flashtext==2.7
 pywsd==1.2.5

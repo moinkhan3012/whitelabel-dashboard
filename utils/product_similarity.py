@@ -4,7 +4,8 @@ import string
 import streamlit as st
 from collections import defaultdict
 from nltk.tokenize import word_tokenize
-
+import nltk
+nltk.download('punkt')
 
 def get_all_contexts(text, target_word, context_size=5):
     # Tokenize the text
