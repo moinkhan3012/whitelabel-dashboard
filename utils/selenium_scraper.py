@@ -74,101 +74,147 @@ def get_driver():
 
 
 class AmazonScraper:
+    """
+    A class to scrape product data from Amazon.
+    """
 
     def __init__(self, url):
-        
-        service = webdriver.chrome.service.Service()
-        # options = webdriver.ChromeOptions()
+        """
+        Initializes the AmazonScraper class.
+
+        Args:
+            url (str): The URL of the Amazon product page.
+        """
+        # Configure Chrome WebDriver options
         options = Options()
         options.add_argument("--start-maximized")
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
-        options.add_argument('--no-sandbox')   
-        options.add_argument('--disable-dev-shm-usage')  
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
         options.add_argument(f"user-agent={random.choice(user_agents)}")
         options.add_experimental_option("detach", True)
-        self.driver = webdriver.Chrome(service=service, options=options)
 
+        # Initialize the WebDriver
+        service = webdriver.chrome.service.Service()
+        self.driver = webdriver.Chrome(service=service, options=options)
         self.search_url = url
-        self.driver.get(self.search_url)        
-        
+        self.driver.get(self.search_url)
+
     def isNullElement(self, element):
+        """
+        Checks if a given element is empty (null).
+
+        Args:
+            element (WebElement): The WebElement to check.
+
+        Returns:
+            bool: True if the element is null, False otherwise.
+        """
         img = element.find_elements(By.XPATH, ".//img[@src]")
-        if element.text.strip() or img:
-            return False
-        return True
-    
+        return not (element.text.strip() or img)
+
     def find_element(self, element, locator, expression, list=True):
+        """
+        Finds elements within a given element.
+
+        Args:
+            element (WebElement): The parent element to search within.
+            locator (By): The method to use for locating elements.
+            expression (str): The expression to match elements.
+            list (bool): Whether to return a list of elements. Defaults to True.
+
+        Returns:
+            list or WebElement: The matching elements or a single element.
+        """
         result = element.find_elements(locator, expression)
         if list:
             return result
-        
         return result[0] if result else None
 
     def getProductTitle(self):
+        """
+        Extracts the product title.
+
+        Returns:
+            str: The product title.
+        """
         return self.driver.find_element(By.ID, 'productTitle').text
-    
+
     def getLeftImage(self):
-        return [img.get_attribute('src') for img in self.driver.find_elements(By.XPATH, "//div[@id='imageBlock']//div[@class='imgTagWrapper']//img")]
+        """
+        Extracts the product images from the left image block.
+
+        Returns:
+            list: List of image URLs.
+        """
+        return [
+            img.get_attribute('src') for img in self.driver.find_elements(By.XPATH, "//div[@id='imageBlock']//div[@class='imgTagWrapper']//img")
+        ]
 
     def getProductNameAndIDFromURL(self):
-        product_path = urllib.parse.urlparse(self.driver.current_url).path.strip('/').split('/')
+        """
+        Extracts the product name and ID from the current URL.
 
+        Returns:
+            tuple: A tuple containing the product name and product ID.
+        """
+        product_path = urllib.parse.urlparse(self.driver.current_url).path.strip('/').split('/')
         product_name = product_path[0].replace("-", " ")
         product_id = product_path[2]
-        
         return product_name, product_id
 
     def parseCenterDiv(self):
-        #parse centerDiv
+        """
+        Parses the center division of the product page.
 
+        Returns:
+            dict: A dictionary containing product details.
+        """
         product_detail = {}
-    #     required_div = ["featurebullets_feature_div", "bylineInfo_feature_div", "title_feature_div", "productOverview_feature_div"]
-        
+
+        # Get the center column element
         centerDiv = self.driver.find_elements(By.XPATH, "//div[@id='ppd']")[0].find_element(By.XPATH, ".//div[@id='centerCol']")
 
-        #get product title
+        # Get product title
         product_detail['product_title'] = centerDiv.find_element(By.ID, 'productTitle').text
 
-        #get product brand
+        # Get product brand
         product_detail['product_brand'] = re.sub("^Visit the|^Brand:|store$", "", centerDiv.find_element(By.ID, 'bylineInfo').text, flags=re.IGNORECASE).strip()
         product_detail['product_brand_url'] = centerDiv.find_element(By.ID, 'bylineInfo').get_attribute('href')
 
-        #get customer reviews
+        # Get customer reviews
         customer_reviews = centerDiv.find_elements(By.XPATH, "//div[@id='averageCustomerReviews']")
         if customer_reviews:
             product_detail['customer_reviews'] = customer_reviews[0].text.split("\n")[0]
 
-        #get prdouct overview
-#         product_detail['product_overview'] = {}
-        
+        # Parse product overview
         product_overview_feature_div = centerDiv.find_elements(By.XPATH, "//div[@id='productOverview_feature_div']")
-        if product_overview_feature_div:        
+        if product_overview_feature_div:
             soup = BeautifulSoup(product_overview_feature_div[0].get_attribute('innerHTML'), 'html.parser')
-            for i in soup.findAll('tr'):
-                td = i.findChildren('td')
-
-                #below if elif are just for glance icons
+            for row in soup.findAll('tr'):
+                td = row.findChildren('td')
                 if td[0].find('table'):
                     td = td[0].findAll('td')[-1].findAll('span')
                 elif td[0].find('img'):
                     td = td[1].findAll('span')
-
                 product_detail[td[0].text.strip()] = td[1].text.strip()
-                
-        #parse about section
-        #replace non ascii characters and continous spaces
+
+        # Parse about section
         product_detail['product_about'] = ""
         product_about = centerDiv.find_elements(By.XPATH, ".//div[@id='featurebullets_feature_div']//ul")
-        
         if product_about:
             product_detail['product_about'] = re.sub("\s+", " ", re.sub(r'[^\x00-\x7F]+', "", product_about[0].text))
-
 
         return product_detail
 
     def parseBottomDivs(self):
+        """
+        Parses the bottom divisions of the product page.
 
+        Returns:
+            tuple: A tuple containing product details and a list of image URLs.
+        """
         productDescription = self.driver.find_elements(By.XPATH, "//div[@id='productDescription']")
         if productDescription:
             productDescription = productDescription[0].text.strip()
@@ -230,4 +276,7 @@ class AmazonScraper:
         return product_details, images
 
     def quit(self):
+        """
+            Quits the WebDriver session.
+        """
         self.driver.quit()
