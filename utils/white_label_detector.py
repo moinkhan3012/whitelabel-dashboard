@@ -1,46 +1,33 @@
 import requests
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import KMeans
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
-from transformers import BertTokenizer, BertModel
-import torch
 import pandas as pd
 
 import numpy as np
-from transformers import BertTokenizer, BertModel
-import torch.nn.functional as F
 from sklearn.metrics.pairwise import cosine_similarity
-import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 from PIL import Image
 from scipy.cluster.hierarchy import linkage, dendrogram
-import matplotlib.pyplot as plt
 
 import nltk
 import spacy
 from nltk.tokenize import word_tokenize
-from nltk.tokenize import RegexpTokenizer
 nlp = spacy.load("en_core_web_sm")
 
-import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import os
 from PIL import Image
-from scipy.cluster.hierarchy import linkage, dendrogram
-import matplotlib.pyplot as plt
 
 
 ## Data Processing

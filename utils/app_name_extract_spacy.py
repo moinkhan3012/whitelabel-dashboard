@@ -4,12 +4,11 @@ import string
 import streamlit as st
 from collections import defaultdict
 from nltk.tokenize import word_tokenize
-import nltk
-nltk.download('punkt')
+
 
 def get_all_contexts(text, target_word, context_size=5):
     # Tokenize the text
-    tokens = word_tokenize(text)
+    tokens = word_tokenize(re.sub('[a-zA-Z0-9]+', '', text))
 
     tokens = [token for token in tokens if token not in string.punctuation]
     # Find all occurrences of the target word
@@ -28,21 +27,23 @@ def get_all_contexts(text, target_word, context_size=5):
     return all_contexts
 
 def __extract_app_name(text):
-    API_URL = st.secrets.huggingface_cred.API_URL
+    API_URL = st.secrets.huggingface_cred.API_URL_SPACY
     API_TOKEN = st.secrets.huggingface_cred.API_TOKEN
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
     
     payload = {
         "inputs": text,
         "options": {
-            "wait_for_model": True #avoid 503 issue
+            "wait_for_model": True  # avoid 503 issue
         }
     }
-    response = requests.post(API_URL, headers=headers, json=payload)
-    if response.status_code ==200:
-    	return {"apps": [app['word'] for app in response.json()]}
 
+    response = requests.post(API_URL, headers=headers, json=payload)
+    if response.status_code == 200:
+        return {"apps": [app['word'] for app in response.json()]}
+ 
     return {"err": response.json()['error']}
+
     
 
 def get_app_name(text):
@@ -55,7 +56,7 @@ def get_app_name(text):
         result = __extract_app_name(context)
         if 'err' in result:
             st.warning(f"Could not completed inference! {result['err']}", icon="⚠️")
-            return
+            return {'err': result['err']}
         
         #iterate through the entities
         for app in result['apps']:
@@ -63,4 +64,4 @@ def get_app_name(text):
             app_name[name]  +=1
 
     # return app_name if app_name else None
-    return max(app_name, key=app_name.get) if app_name else None
+    return {'app': max(app_name, key=app_name.get) if app_name else None}

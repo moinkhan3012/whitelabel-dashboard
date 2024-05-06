@@ -1,9 +1,13 @@
 import streamlit as st
 from utils.selenium_scraper import AmazonScraper
 from utils.data_analysis import DataAnalysis
-from utils.product_similarity import *
-import nltk
+import utils.app_name_extract_spacy as app_name_extract_spacy
+import utils.app_name_extract_bert as app_name_extract_bert
+from annotated_text import annotated_text
 import logging
+
+import nltk
+nltk.download('punkt')
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -77,5 +81,15 @@ if product_url:
             
             
         if st.button("Get app names", use_container_width=True, type="secondary"):
-            st.markdown(get_app_name(product['short_description'] + product['long_description']))
-
+            result = app_name_extract_bert.get_app_name(product)
+            
+            if 'err' in result:
+                st.warning(f"Could not completed inference! {result['err']}", icon="⚠️")
+                
+            else:
+                if result['app']:
+                    annotated_text(
+                        (result['app'], "APP_NAME")
+                    )
+                else:
+                    st.warning(f"No APP Name Found!", icon="⚠️")
