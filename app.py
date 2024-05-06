@@ -59,10 +59,14 @@ def display_product_details(product):
     Args:
         product (dict): A dictionary containing product details.
     """
-    st.image(product['image_url'])
-    st.subheader(f"[{product['title']}]({product['url']})")
-    st.markdown("## Product Info:")
-    st.markdown(product['short_description'])
+    col1, col2 = st.columns(2)
+    with col1:
+        st.image(product['image_url'])
+        st.subheader(f"[{product['title']}]({product['url']})")
+
+    with col2:
+        st.markdown("## Product Info:")
+        st.markdown(product['short_description'])
 
 
 def display_top_similar_products(top_similar_products):
@@ -98,26 +102,38 @@ if product_url:
     with st.container():
         display_product_details(product)
     
-    col1, col2 = st.columns([1, 10])
-    with col2:
-        # Button to search for white labels
-        if st.button("Search for white labels", use_container_width=True, type="primary"):
-            data_path = "./amazon_smart_cameras_products_text_image_matrix_tfidf.csv"
-            given_product_id = product['id']
-            data_analysis = DataAnalysis(data_path, given_product_id)
-            top_similar_products = data_analysis.find_top_similar_products()
-            display_top_similar_products(top_similar_products)
+        col1, col2 = st.columns(2)
+        with col1:
+            # Button to search for white labels
+            if st.button("Search for white labels", use_container_width=True, type="primary"):
+                data_path = "./amazon_smart_cameras_products_text_image_matrix_tfidf.csv"
+                given_product_id = product['id']
+                data_analysis = DataAnalysis(data_path, given_product_id)
+                top_similar_products = data_analysis.find_top_similar_products()
+                
+                ## Store the results in session state
+                # this is required because once we click the Get app names button, the content under col2 gets removed
+                st.session_state['top_similar_products'] = top_similar_products  
 
-        # Button to get app names
-        if st.button("Get app names", use_container_width=True, type="secondary"):
-            result = app_name_extract_bert.get_app_name(product)
 
-            if 'err' in result:
-                st.warning(f"Could not complete inference! {result['err']}", icon="⚠️")
-            else:
-                if result['app']:
-                    annotated_text(
-                        (result['app'], "APP_NAME")
-                    )
+            if 'top_similar_products' in st.session_state:
+                display_top_similar_products(st.session_state['top_similar_products'])
+        with col2:
+            # Button to get app names
+            if st.button("Get app names", use_container_width=True, type="secondary"):
+                app_result = app_name_extract_bert.get_app_name(product)
+
+                st.session_state['app_result'] = app_result  # Store the results in session state
+                        
+
+            if 'app_result' in st.session_state:
+                result = st.session_state['app_result']
+                if 'err' in result:
+                    st.warning(f"Could not complete inference! {result['err']}", icon="⚠️")
                 else:
-                    st.warning(f"No APP Name Found!", icon="⚠️")
+                    if result['app']:
+                        annotated_text(
+                            (result['app'], "APP_NAME")
+                        )
+                    else:
+                        st.warning(f"No APP Name Found!", icon="⚠️")
