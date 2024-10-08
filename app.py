@@ -10,6 +10,7 @@ import nltk
 # Download necessary NLTK data
 nltk.download('stopwords')
 nltk.download('punkt')
+nltk.download('punkt_tab')
 
 # Configure logging
 logging.basicConfig(level=logging.WARNING)
