@@ -70,10 +70,11 @@ user_agents = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
 @st.cache_resource
 def get_driver(_options):
     
-    executable_path = ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+    # executable_path = ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+    executable_path = ChromeDriverManager().install()
 
     print(f"Chrome installed/found at {executable_path}")
-    return webdriver.Chrome( service=Service(), options=_options)
+    return webdriver.Chrome( service=Service(executable_path=executable_path), options=_options)
 
 
 class AmazonScraper:
