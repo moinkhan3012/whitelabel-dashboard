@@ -69,12 +69,11 @@ user_agents = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
 
 @st.cache_resource
 def get_driver(_options):
-    return webdriver.Chrome(
-        service=Service(
-            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-        ),
-        options=_options
-    )
+    
+    executable_path = ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
+
+    print(f"Chrome installed/found at {executable_path}")
+    return webdriver.Chrome( service=Service(), options=_options)
 
 
 class AmazonScraper:
@@ -100,9 +99,10 @@ class AmazonScraper:
         options.add_experimental_option("detach", True)
 
         # Initialize the WebDriver
-        service = webdriver.chrome.service.Service()
-        self.driver = webdriver.Chrome(service=service, options=options)
-        # self.driver = get_driver(options)
+        # print(f"*********Path:", ChromeDriverManager().install())
+        # service = webdriver.chrome.service.Service()
+        # self.driver = webdriver.Chrome(service=service, options=options)
+        self.driver = get_driver(options)
         self.search_url = url
         self.driver.get(self.search_url)
         
