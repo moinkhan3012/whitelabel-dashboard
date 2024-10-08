@@ -1,3 +1,4 @@
+import os
 import random
 import re
 import urllib
@@ -8,6 +9,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.os_manager import ChromeType
 
@@ -65,11 +68,12 @@ user_agents = ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
 
 
 @st.cache_resource
-def get_driver():
+def get_driver(_options):
     return webdriver.Chrome(
         service=Service(
             ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
-        )
+        ),
+        options=_options
     )
 
 
@@ -98,8 +102,13 @@ class AmazonScraper:
         # Initialize the WebDriver
         service = webdriver.chrome.service.Service()
         self.driver = webdriver.Chrome(service=service, options=options)
+        # self.driver = get_driver(options)
         self.search_url = url
         self.driver.get(self.search_url)
+        
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "ppd")) #wait for element with id ppd to load
+        )
 
     def isNullElement(self, element):
         """

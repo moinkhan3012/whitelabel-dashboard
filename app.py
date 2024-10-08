@@ -78,7 +78,11 @@ def display_top_similar_products(top_similar_products):
     """
     st.markdown("## Top Similar Products:")
 
-    for index, row in top_similar_products.iterrows():
+    if top_similar_products.empty:
+        st.info("We could not find any similar product")
+        return    
+    
+    for _, row in top_similar_products.iterrows():
         with st.expander(f"Product: {row['product_1']}"):
             st.subheader(f"[{row['product_1']}]({row['product_1_url']})")
             st.write(f"Text Short: {row['text_short']}")
