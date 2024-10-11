@@ -86,9 +86,9 @@ def display_top_similar_products(top_similar_products):
     for _, row in top_similar_products.iterrows():
         with st.expander(f"Product: {row['product_1']}"):
             st.subheader(f"[{row['product_1']}]({row['product_1_url']})")
-            st.write(f"Text Short: {row['text_short']}")
-            st.write(f"Text Long: {row['text_long']}")
-            st.write(f"Image: {row['image']}")
+            st.write(f"Text Short: {round(row['text_short'],3)}")
+            st.write(f"Text Long: {round(row['text_long'],3)}")
+            st.write(f"Image: {round(row['image'],3)}")
 
 
 # Configure the Streamlit page layout
