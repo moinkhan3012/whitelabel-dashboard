@@ -100,9 +100,6 @@ class AmazonScraper:
         options.add_experimental_option("detach", True)
 
         # Initialize the WebDriver
-        # print(f"*********Path:", ChromeDriverManager().install())
-        # service = webdriver.chrome.service.Service()
-        # self.driver = webdriver.Chrome(service=service, options=options)
         self.driver = get_driver(options)
         self.search_url = url
         self.driver.get(self.search_url)
