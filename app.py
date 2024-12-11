@@ -93,7 +93,7 @@ def display_top_similar_products(top_similar_products):
 
 # Configure the Streamlit page layout
 st.set_page_config(layout='wide')
-st.markdown("<h1 style='text-align: center; color: black;'>Welcome to White Label Detector</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: red;'>Welcome to White Label Detector</h1>", unsafe_allow_html=True)
 st.markdown("Select the product you are planning to buy on Amazon below and we will display the top products which might be white labels of the chosen one!")
 
 # Input for the product URL

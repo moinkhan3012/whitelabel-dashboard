@@ -38,13 +38,14 @@ class DataAnalysis:
             (self.product_matrix_df['product_2'] == self.product_id)
         ]
 
-        # Calculate a combined similarity score by summing the scores from text_short, text_long, and image
-        filtered_df['combined_score'] = (
-            filtered_df['text_short'] + filtered_df['text_long'] + filtered_df['image']
-        )
+        #filtered_df based on the feature score
+        filtered_df = filtered_df.query('text_long >= 0.2 and text_short >= 0.6 and image >= 0.8')
+        
+        #make sure make brands are present
+        sorted_df = filtered_df[filtered_df['brand_1']!=filtered_df['brand_2']].sort_values(by=['text_short', 'text_long', 'image'], ascending=False)
 
         # Sort the dataframe based on the combined similarity score in descending order
-        sorted_df = filtered_df.sort_values(by='combined_score', ascending=False)
+        # sorted_df = filtered_df.sort_values(by='combined_score', ascending=False)
 
         # Exclude the original product and take the top N similar products
         top_similar_products = sorted_df[sorted_df['product_1'] != self.product_id].head(top_n)
